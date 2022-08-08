@@ -6,15 +6,15 @@ The aim of this repository is to understand the technicalities behind the QR cod
 
 # TODO
 
-## Data Analysis - Ongoing
+## Data Analysis - Work In Progress (Byte Mode Complete)
 
 Identify the types of characters/symbols being used in a given string to determine the correct mode to be applied when creating segments. Additionally work out the smallest possible QR code version that can be used with a given string if the user has not specified a version to use.
 
-## Data Encodation
+## Data Encodation - Work In Progress (Byte Mode Complete)
 
 Convert the given string into a bit stream in accordance with the rules enforced by the appropriate mode. Additionally a terminator (end of message) should be appended to the end of the data sequence before splitting the bit stream into 8-bit codewords. Padding should be added to fill any unused space.
 
-## Error Correction Coding
+## Error Correction Coding - On Going - [Error Correction Repository](https://github.com/AlphaLupine/rs-codes)
 Divide the codeword sequence into the required number of blocks to enable error correction algorithms to be processed. Generate the error correction codewords for each block, appending the error correction codewords to the end of the data codeword sequence.
 
 ## Structure Final Message
