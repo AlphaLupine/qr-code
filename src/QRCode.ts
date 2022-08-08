@@ -47,9 +47,11 @@ export class QRCode {
         regex.Kanji.test(text) ? this.mode = "Kanji" :
         this.mode = "Byte";
 
+        //TODO: Make this function apply the rules for each mode. eg the processing done by this function should differ based on the mode.
+        const bitArray = this.createBitArray(text, this.mode);
+
         //determine the lowest version that can hold the data if the user has not specified one
         if(this.version == 0) {
-            const bitArray = this.createBitArray(text);
             this.determineVersion(bitArray, ecc)
         }
 
@@ -83,15 +85,19 @@ export class QRCode {
 
     }
 
-    private createBitArray(text: string): string[] {
+    private createBitArray(text: string, mode: Mode): string[] {
         let temp = [];
 
-        for(let i = 0; i < text.length; i++) {
-            let charAsBits = text[i].charCodeAt(0).toString(2);
-            while(charAsBits.length < 8) {
-                charAsBits = `0${charAsBits}`;
+        if(mode == "Byte") {
+
+            for(let i = 0; i < text.length; i++) {
+                let charAsBits = text[i].charCodeAt(0).toString(2);
+                while(charAsBits.length < 8) {
+                    charAsBits = `0${charAsBits}`;
+                }
+                temp.push(charAsBits);
             }
-            temp.push(charAsBits);
+            
         }
 
         return temp;
