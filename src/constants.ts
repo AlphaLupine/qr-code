@@ -49,3 +49,7 @@ export const capacities = {
     ]
 }
 
+export const modes = {
+    "Byte": "0100"
+}
+

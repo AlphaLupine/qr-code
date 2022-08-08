@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-import { regex, capacities } from "./constants";
+import { regex, capacities, modes } from "./constants";
 
 export class QRCode {
     toEncode: string;
@@ -36,11 +36,43 @@ export class QRCode {
     public encodeText() {
         const text = this.toEncode;
         const ecc = this.errorCorrectionLevel;
-        this.analyzeText(text, ecc);
+        const bytes = this.analyzeText(text, ecc);
+        const segment = this.createSegment(bytes)
+        console.log(segment);
+    }
+
+    //In this program, only one segment will be created
+    private createSegment(bytes: string[]): string {
+
+        const padding = ["11101100", "00010001"];
+        let useAlt = false;
+        let charCount = this.toEncode.length.toString(2);
+        const terminator = "0000";
+
+        //Loop over bits until length is 8 creating a byte
+        while(charCount.length < 8) {
+            charCount = `0${charCount}`;
+        }
+
+        const bitStream = bytes.join("");
+        let segment = modes.Byte + charCount + bitStream + terminator;
+
+        //Loop message and fill any empty space using the padding bytes 11101100 and 00010001
+        while(segment.length < capacities.ECCL[this.version!-1] * 8) {
+            if(!useAlt) {
+                segment += padding[0];
+                useAlt = true;
+            } else {
+                segment += padding[1];
+                useAlt = false;
+            }
+        }
+
+        return segment
     }
 
     //TODO: Add ECI Mode when it is understood
-    private analyzeText(text: string, ecc: ErrorCorrectionLevel){
+    private analyzeText(text: string, ecc: ErrorCorrectionLevel): string[] {
         //work out which mode to use based on user input
         regex.Numeric.test(text) ? this.mode = "Numeric" :
         regex.Alphanumeric.test(text) ? this.mode = "Alphanumeric" :
@@ -56,6 +88,7 @@ export class QRCode {
         }
 
         console.log(`Selected mode: ${this.mode}\nSelected version: ${this.version}`)
+        return bitArray;
     }
 
     private determineVersion(bitArray: string[], ecc: ErrorCorrectionLevel) {
@@ -97,7 +130,7 @@ export class QRCode {
                 }
                 temp.push(charAsBits);
             }
-            
+
         }
 
         return temp;
